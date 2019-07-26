@@ -58,14 +58,11 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter {
                     Unpooled.wrappedBuffer(respStr.getBytes(CharsetUtil.UTF_8)));
             response.headers()
                     .set(HttpHeaderNames.CONTENT_TYPE, "text/plain")
-                    .set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes())
-                    .set(HttpHeaderNames.CONNECTION, success ? HttpHeaderValues.KEEP_ALIVE : HttpHeaderValues.CLOSE);
+                    .set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
             ctx.write(response);
             ctx.flush();
             if (success) {
                 Counter.GENERATED.add(1);
-            } else {
-                ctx.close();
             }
         }
     }

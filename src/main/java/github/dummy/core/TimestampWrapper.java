@@ -1,5 +1,7 @@
 package github.dummy.core;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -8,20 +10,32 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TimestampWrapper {
 
-    private static final long MAX_ALIVE_MILLIS = 1000;
+    private static final long MAX_ALIVE_MILLIS = 2000;
+
+    private static final VarHandle ID;
 
     private final long timestamp;
 
     private volatile int i = 0;
 
+    static {
+        MethodHandles.Lookup l = MethodHandles.lookup();
+        try {
+            ID = l.findVarHandle(TimestampWrapper.class, "i", int.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
     TimestampWrapper(long timestamp) {
         this.timestamp = timestamp;
+
     }
 
     String nextIdString() {
-        synchronized (this) {
-            return String.format("%04d", this.i++);
-        }
+        int ti = i;
+        for (; !ID.compareAndSet(this, ti, ti + 1); ti = i) {}
+        return String.format("%04d", ti + 1);
     }
 
     /**

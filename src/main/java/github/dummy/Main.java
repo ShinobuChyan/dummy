@@ -64,7 +64,7 @@ public class Main {
             ChannelFuture f = b.bind(configuration.port).sync();
             System.out.println("system started on " + configuration.port + " with pool-map-cap: " + configuration.poolMapCap);
 
-            // help gc per second
+            // help gc per 5 seconds
             workerPool.execute(() -> {
                 while (running) {
                     var current = System.currentTimeMillis();

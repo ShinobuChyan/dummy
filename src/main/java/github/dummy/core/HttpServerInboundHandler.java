@@ -47,7 +47,7 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter {
             if (pool == null) {
                 respStr = "unknown biz code";
             } else {
-                respStr = genId(pool);
+                respStr = String.valueOf(genId(pool));
                 success = true;
             }
 
@@ -78,17 +78,17 @@ public class HttpServerInboundHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
 
-    private String genId(ConcurrentHashMap<TimestampWrapper, TimestampWrapper> pool) {
+    private long genId(ConcurrentHashMap<TimestampWrapper, TimestampWrapper> pool) {
         var timestamp = System.currentTimeMillis();
         var wrapper = new TimestampWrapper(timestamp);
         TimestampWrapper prev;
-        String idString;
+        long id;
         if ((prev = pool.putIfAbsent(wrapper, wrapper)) == null) {
-            idString = wrapper.nextIdString();
+            id = wrapper.nextId();
         } else {
-            idString = prev.nextIdString();
+            id = prev.nextId();
         }
-        return timestamp + idString;
+        return id;
     }
 
 }

@@ -32,10 +32,10 @@ public class TimestampWrapper {
 
     }
 
-    String nextIdString() {
+    long nextId() {
         int ti = i;
         for (; !ID.compareAndSet(this, ti, ti + 1); ti = i) {}
-        return String.format("%04d", ti + 1);
+        return (timestamp << 4) + ti;
     }
 
     /**
